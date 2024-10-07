@@ -1,0 +1,35 @@
+# FastAPI 관련 무시 항목
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+
+# FastAPI 로그 파일
+*.log
+
+# FastAPI 테스트 캐시
+.pytest_cache/
+
+# FastAPI 문서 생성 파일
+docs/_build/
+
+# FastAPI 의존성 파일
+pip-delete-this-directory.txt
+
+# FastAPI IDE 설정
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# FastAPI 배포 관련 파일
+*.egg-info/
+dist/
+build/

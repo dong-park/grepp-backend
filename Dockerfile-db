@@ -1,0 +1,20 @@
+# Use the official PostgreSQL image as the base image
+FROM postgres:latest
+
+# Set environment variables
+ENV POSTGRES_DB=postgres
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=password
+
+# Copy dump file
+# COPY ./dump.sql /docker-entrypoint-initdb.d/
+
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+# Set the default command to run when starting the container
+CMD ["postgres"]
+
+# Dockerfile-db를 실행하려면 다음 명령어를 사용하세요:
+# docker build -t grepp-backend-db -f Dockerfile-db .
+# docker run --name grepp-backend-db -d grepp-backend-db

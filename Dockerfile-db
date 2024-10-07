@@ -2,7 +2,7 @@
 FROM postgres:latest
 
 # Set environment variables
-ENV POSTGRES_DB=postgres
+ENV POSTGRES_DB=grepp-backend
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=password
 

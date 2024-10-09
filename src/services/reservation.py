@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List, Optional
 
 from fastapi import HTTPException, status
@@ -13,7 +13,7 @@ from src.schemas.reservation import (AdminReservationRead, ReservationCreate,
                                      ReservationRead, ReservationUpdate,
                                      UserReservationRead)
 from src.schemas.user import UserBase
-from src.utils.time_utils import get_kst_now, get_utc_now
+from src.utils.time_utils import get_kst_now
 
 
 class ReservationService:
@@ -84,16 +84,16 @@ class ReservationService:
             db_reservation = reservation_crud.get_reservation_for_update(db, reservation_id)
             if db_reservation is None:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="예약을 찾을 수 없습니다. 예약 ID를 확인해주세요.")
-            
+
             # 권한 확인
             if not current_user.is_admin and db_reservation.user_id != current_user.user_id:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="해당 예약에 대한 수정 권한이 없습니다.")
             if not current_user.is_admin and request.is_confirmed is not None:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="해당 예약에 대한 허가 권한이 없습니다.")
-            
+
             # 예약 상태 업데이트
             updated_reservation = reservation_crud.update_reservation(db, reservation_id, request)
-            
+
         return updated_reservation
 
     @staticmethod

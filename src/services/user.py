@@ -21,9 +21,16 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: UserCreate):
-    hashed_password = get_password_hash(user.password)
-    db_user = User(email=user.email, username=user.username, hashed_password=hashed_password)
+def create_user(db: Session, request: UserCreate):
+    if get_user_by_username(db, username=request.username):
+        raise HTTPException(status_code=400, detail="이미 등록된 아이디입니다.")
+
+    if get_user_by_email(db, email=request.email):
+        raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
+
+
+    hashed_password = get_password_hash(request.password)
+    db_user = User(email=request.email, username=request.username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

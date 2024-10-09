@@ -6,6 +6,10 @@ def get_utc_now():
     return datetime.now(pytz.UTC)
 
 
+def get_kst_now():
+    return datetime.now(pytz.timezone('Asia/Seoul'))
+
+
 def convert_to_utc(dt, timezone):
     local = pytz.timezone(timezone)
     local_dt = local.localize(dt, is_dst=None)

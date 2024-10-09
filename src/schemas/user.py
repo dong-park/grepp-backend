@@ -16,6 +16,7 @@ password_field = Field(
     }
 )
 
+
 class UserBase(BaseModel):
     email: EmailStr = Field(..., description="사용자의 이메일 주소", example="grepp@example.com")
     username: str = Field(..., description="사용자의 이름", example="grepp")
@@ -32,6 +33,7 @@ class UserCreate(UserBase):
                 "password": "password123!@#"
             }
         }
+
 
 class UserLogin(BaseModel):
     username: str = Field(
@@ -87,6 +89,10 @@ class UserInDB(UserBase):
         }
 
 
+class UserRead(UserBase):
+    pass
+
+
 class User(UserBase):
     user_id: int = Field(..., description="사용자의 고유 식별자")
 
@@ -102,7 +108,8 @@ class User(UserBase):
 
 
 class UserLoginResponse(BaseModel):
-    access_token: str = Field(..., description="액세스 토큰", example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTUxNjIzOTAyMn0.Q23Qk5z5Y4_y5Xx_5xYw50W3YR68Y4Y")
+    access_token: str = Field(..., description="액세스 토큰",
+                              example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTUxNjIzOTAyMn0.Q23Qk5z5Y4_y5Xx_5xYw50W3YR68Y4Y")
     token_type: str = Field(..., description="토큰 타입", example="bearer")
 
     class Config:

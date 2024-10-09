@@ -19,7 +19,7 @@ def get_exam_schedule_with_available_capacity(db: Session, exam_id: int):
         Reservation,
         and_(
             Reservation.exam_id == ExamSchedule.exam_id,
-            Reservation.is_confirmed == True
+            Reservation.is_confirmed is True
         )
     ).filter(
         ExamSchedule.exam_id == exam_id
@@ -33,5 +33,6 @@ def get_exam_schedule_with_available_capacity(db: Session, exam_id: int):
         exam_id=result.exam_id,
         start_time=result.start_time,
         max_capacity=result.max_capacity,
-        reserved_participants=result.reserved_participants
+        reserved_participants=result.reserved_participants,
+        available_slots=result.max_capacity - result.reserved_participants,
     )

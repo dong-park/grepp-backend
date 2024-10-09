@@ -49,7 +49,7 @@ class ReservationService:
         db_reservation = reservation_crud.get_reservation(db, reservation_id)
         if db_reservation is None:
             raise HTTPException(status_code=404, detail="예약을 찾을 수 없습니다. 예약 ID를 확인해주세요.")
-        if not current_user.is_admin & db_reservation.user_id != current_user.user_id:
+        if not current_user.is_admin and db_reservation.user_id != current_user.user_id:
             raise HTTPException(status_code=403, detail="이 예약에 접근할 권한이 없습니다. 본인의 예약만 조회할 수 있습니다.")
         return db_reservation
 
@@ -100,13 +100,4 @@ class ReservationService:
         three_days_later = now + timedelta(days=3)
 
         available_times = reservation_query.get_available_times(db, now, three_days_later)
-
-        result = []
-        for time in available_times:
-            result.append({
-                "exam_id": time.exam_id,
-                "start_time": time.start_time,
-                "available_slots": time.max_capacity - time.reserved_participants
-            })
-
-        return result;
+        return available_times

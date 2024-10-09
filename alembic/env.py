@@ -1,16 +1,12 @@
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from alembic import context
-
-from src.db.base import Base
 from src.core.config import settings
-
 from src.db.base import Base, import_models
 
-# 모든 모델을 import합니다
 import_models()
 
 # this is the Alembic Config object, which provides

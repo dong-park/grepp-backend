@@ -14,7 +14,3 @@ EXPOSE 5432
 
 # Set the default command to run when starting the container
 CMD ["postgres"]
-
-# Dockerfile-db를 실행하려면 다음 명령어를 사용하세요:
-# docker build -t grepp-backend-db -f Dockerfile-db .
-# docker run --name grepp-backend-db -d grepp-backend-db

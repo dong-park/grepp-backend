@@ -1,5 +1,23 @@
 version: '3.8'
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-api
+    expose:
+      - "8000"
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+    environment:
+      - PYTHONPATH=/app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=password
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=grepp-backend
+      - DATABASE_URL=postgresql://postgres:password@db:5432/grepp-backend
   db:
     build:
       context: .
@@ -10,10 +28,23 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=grepp-backend
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
-  redis_data:
 
 networks:
   app-network:

@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.api.deps import get_db, get_current_user
-from src.schemas.user import User, UserCreate, UserLoginResponse, UserLogin
+from src.schemas.user import User, UserCreate, UserLoginResponse
 from src.services import user as user_service
 
 router = APIRouter()
 
 
-@router.post("", response_model=User, status_code=status.HTTP_201_CREATED,
+@router.post("",  status_code=status.HTTP_201_CREATED,
              summary="새 사용자 생성",
              description="새로운 사용자를 생성합니다. 이메일이 이미 등록되어 있으면 오류를 반환합니다.")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -19,10 +19,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     - **username**: 사용자 이름
     - **password**: 사용자 비밀번호
     """
-    db_user = user_service.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
-    return user_service.create_user(db=db, user=user)
+    user_service.create_user(db=db, request=user)
 
 
 @router.post("/login", response_model=UserLoginResponse,

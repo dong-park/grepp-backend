@@ -9,7 +9,7 @@ class ExamSchedule(Base):
 
     exam_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    start_time = Column(DateTime(timezone=True), nullable=False)
+    start_time = Column(DateTime(timezone=True), nullable=False, index=True)
     end_time = Column(DateTime(timezone=True), nullable=False)
     max_capacity = Column(Integer, nullable=False, default=50000)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -10,7 +10,7 @@ class Reservation(Base):
     user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
     exam_id = Column(Integer, ForeignKey("exam_schedules.exam_id"), nullable=False)
     num_participants = Column(Integer, nullable=False)
-    is_confirmed = Column(Boolean, default=False)
+    is_confirmed = Column(Boolean, default=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

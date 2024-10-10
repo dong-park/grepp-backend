@@ -32,7 +32,7 @@ def get_user_reservations(db: Session, user_id: int, page: int = 0, limit: int =
     ))
 
     query = get_user_reservation_join(query, user_id)
-    query.order_by(Reservation.reservation_id)
+    query = query.order_by(Reservation.reservation_id.desc())
     offset = (page - 1) * limit
     query_result = query.offset(offset).limit(limit).all()
     return query_result

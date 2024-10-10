@@ -9,11 +9,11 @@ from src.schemas.reservation import AvailableTimeSchema
 
 
 def get_user_reservation_join(query, user_id):
-    query.join(ExamSchedule, Reservation.exam_id == ExamSchedule.exam_id)
+    query = query.join(ExamSchedule, Reservation.exam_id == ExamSchedule.exam_id, isouter=True)
     if user_id is not None:
         query = query.filter(Reservation.user_id == user_id)
     if user_id is None:
-        query = query.join(User, Reservation.user_id == User.user_id)
+        query = query.join(User, Reservation.user_id == User.user_id, isouter=True)
         query = query.add_columns(
             User.user_id,
             User.username,
@@ -32,9 +32,10 @@ def get_user_reservations(db: Session, user_id: int, page: int = 0, limit: int =
     ))
 
     query = get_user_reservation_join(query, user_id)
-
+    query.order_by(Reservation.reservation_id)
     offset = (page - 1) * limit
-    return query.offset(offset).limit(limit).all()
+    query_result = query.offset(offset).limit(limit).all()
+    return query_result
 
 
 def get_user_reservations_count(db: Session, user_id: int) -> int:

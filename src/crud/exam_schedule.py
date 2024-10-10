@@ -12,6 +12,7 @@ def get_exam_schedule(db: Session, exam_id: int):
 def get_exam_schedule_with_available_capacity(db: Session, exam_id: int):
     result = db.query(
         ExamSchedule.exam_id,
+        ExamSchedule.name,
         ExamSchedule.start_time,
         ExamSchedule.max_capacity,
         func.coalesce(func.sum(Reservation.num_participants), 0).label('reserved_participants')
@@ -31,6 +32,7 @@ def get_exam_schedule_with_available_capacity(db: Session, exam_id: int):
 
     return AvailableTimeSchema(
         exam_id=result.exam_id,
+        name=result.name,
         start_time=result.start_time,
         max_capacity=result.max_capacity,
         reserved_participants=result.reserved_participants,

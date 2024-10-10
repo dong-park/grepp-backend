@@ -34,5 +34,5 @@ def get_exam_schedule_with_available_capacity(db: Session, exam_id: int):
         start_time=result.start_time,
         max_capacity=result.max_capacity,
         reserved_participants=result.reserved_participants,
-        available_slots=result.max_capacity - result.reserved_participants,
+        available_capacity=result.max_capacity - result.reserved_participants,
     )

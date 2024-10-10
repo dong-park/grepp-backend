@@ -16,7 +16,7 @@
 1. 프로젝트 클론:
    ```
    git clone https://github.com/dong-park/grepp-backend.git
-   cd exam-reservation-system
+   cd grepp-backend
    ```
 
 2. Docker Compose로 서비스 실행:

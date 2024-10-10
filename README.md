@@ -1,51 +1,83 @@
-# 시험 일정 예약 시스템 요구사항
+# 시험 일정 예약 시스템
 
-## 1. 시스템 개요
+## 1. GitHub Repository 링크
 
-- 프로그래머스의 온라인 시험 플랫폼을 위한 시험 일정 예약 시스템
-- 기업 고객이 채용 시험 일정을 효율적으로 예약할 수 있는 기능 제공
+[시험 일정 예약 시스템 GitHub Repository](https://github.com/dong-park/grepp-backend)
 
-## 2. 사용자 유형
+## 2. 로컬 환경에서 실행하기 위한 환경 설정 및 실행 방법
 
-- 고객 (기업 고객)
-- 어드민 (시스템 관리자)
+### 필요 조건
 
-## 3. 기능 요구사항
+- Docker
+- Docker Compose
 
-### 3.1 예약 조회 및 신청
+### 실행 방법
 
-- 고객은 예약 가능한 시간과 인원을 조회할 수 있어야 함
-- 예약은 시험 시작 3일 전까지 신청 가능
-- 동일 시간대에 최대 5만명까지 예약 가능
-- 예약에는 시험 일정과 응시 인원이 포함되어야 함
-- 확정되지 않은 예약은 5만명 제한에 포함되지 않음
-- 고객은 본인이 등록한 예약만 조회 가능
-- 어드민은 모든 고객의 예약 조회 가능
+1. 프로젝트 클론:
+   ```
+   git clone https://github.com/dong-park/grepp-backend.git
+   cd exam-reservation-system
+   ```
 
-### 3.2 예약 수정 및 확정
+2. Docker Compose로 서비스 실행:
+   ```
+   docker-compose up --build
+   ```
 
-- 고객은 예약 확정 전에 본인 예약을 수정 가능
-- 어드민은 모든 고객의 예약을 확정 가능
-- 어드민은 고객 예약을 수정 가능
+3. 서비스 접근:
+    - API: `http://localhost`
 
-### 3.3 예약 삭제
+## 3. API 문서
 
-- 고객은 확정 전에 본인 예약을 삭제 가능
-- 어드민은 모든 고객의 예약을 삭제 가능
+API 문서는 Swagger UI를 통해 제공됩니다. 서비스 실행 후 다음 URL에서 확인할 수 있습니다:
 
-## 4. 비기능적 요구사항
+`http://localhost/docs`
 
-- 사용 기술: Ruby 또는 Python (예: Ruby on Rails, Django, FastAPI 등)
-- 데이터베이스: PostgreSQL
+## 4. OAuth2PasswordBearer를 이용한 로그인 방법 (form-data 형식)
 
-## 5. 제출 요구사항
+이 시스템은 OAuth2PasswordBearer를 사용하여 사용자 인증을 처리하며, form-data 형식으로 로그인 요청을 받습니다. 다음은 로그인 과정에 대한 자세한 설명입니다:
+API 문서 상단에 Authorize 버튼을 이용하시면 더욱 쉽게 접근 가능합니다.
 
-- 완성된 소스 코드를 포함한 Github Repository 링크
-- 로컬 환경에서 실행하기 위한 환경 설정 및 실행 방법
-- API 문서
+1. 로그인 요청:
+    - 엔드포인트: POST `/v1/users/login`
+    - Content-Type: `application/x-www-form-urlencoded`
+    - form-data 형식으로 다음 정보를 전송:
+      ```
+      username: 사용자이름
+      password: 비밀번호
+      ```
 
-## 6. 평가 기준
+2. 토큰 발급:
+    - 로그인 성공 시, 서버는 액세스 토큰을 반환합니다.
+    - 응답 예시:
+      ```json
+      {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "token_type": "bearer"
+      }
+      ```
 
-- 코드의 직관성 및 가독성
-- 요구사항의 완전성 및 정확성
-- 설계 및 구현의 효율성
+3. 토큰 사용:
+    - 발급받은 토큰을 이용해 인증이 필요한 API에 접근합니다.
+    - 요청 헤더에 다음과 같이 토큰을 포함시킵니다:
+      ```
+      Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      ```
+
+4. 토큰 갱신:
+    - 토큰 만료 시 재로그인하여 새 토큰을 발급받아야 합니다.
+
+### 주요 엔드포인트
+
+1. 사용자 관리
+    - POST `/v1/users`: 새 사용자 생성
+    - POST `/v1/users/login`: 사용자 로그인
+    - GET `/v1/users/me`: 현재 사용자 정보 조회
+
+2. 예약 관리
+    - GET `/v1/reservations/available-times`: 이용 가능한 시간 조회
+    - POST `/v1/reservations`: 새 예약 생성
+    - GET `/v1/reservations`: 사용자의 모든 예약 조회
+    - GET `/v1/reservations/{reservation_id}`: 특정 예약 조회
+    - PUT `/v1/reservations/{reservation_id}`: 예약 수정
+    - DELETE `/v1/reservations/{reservation_id}`: 예약 삭제

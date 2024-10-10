@@ -7,7 +7,7 @@ ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=password
 
 # Copy dump file
-# COPY ./dump.sql /docker-entrypoint-initdb.d/
+COPY ./scripts/dump.sql /docker-entrypoint-initdb.d/
 
 # Expose the PostgreSQL port
 EXPOSE 5432

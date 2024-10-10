@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -39,6 +39,7 @@ class ReservationUpdate(BaseModel):
 class ReservationRead(BaseModel):
     reservation_id: int = Field(..., description="예약 ID")
     exam_id: int = Field(..., description="시험 ID")
+    exam_name: str = Field(..., description="시험 제목")
     is_confirmed: bool = Field(..., description="예약 확정 여부")
     num_participants: int = Field(..., description="참가자 수")
 
@@ -53,6 +54,22 @@ class AdminReservationRead(ReservationRead):
 
     class Config:
         from_attributes = True
+
+
+class UserReservationReadList(BaseModel):
+    page: int
+    page_size: int
+    total_itmes: int
+    total_pages: int
+    revations: List[UserReservationRead]
+
+
+class AdminReservationReadList(BaseModel):
+    page: int
+    page_size: int
+    total_itmes: int
+    total_pages: int
+    revations: List[AdminReservationRead]
 
 
 class ReservationInDB(ReservationBase):
@@ -82,10 +99,11 @@ class Reservation(ReservationInDB):
 
 class AvailableTimeSchema(BaseModel):
     exam_id: int = Field(..., description="시험 ID")
+    name: str = Field(..., description="시험 제목")
     start_time: datetime = Field(..., description="시험 시작 시간")
     max_capacity: int = Field(..., gt=0, description="최대 수용 인원")
     reserved_participants: int = Field(..., ge=0, description="예약된 참가자 수")
-    available_slots: int = Field(..., ge=0, description="예약 가능한 참가자 수")
+    available_capacity: int = Field(..., ge=0, description="예약 가능한 참가자 수")
 
 
     class Config:
@@ -93,9 +111,10 @@ class AvailableTimeSchema(BaseModel):
         json_schema_extra = {
             "example": {
                 "exam_id": 1,
+                "name": "시험 제목",
                 "start_time": "2023-06-15T14:30:00Z",
                 "max_capacity": 10,
                 "reserved_participants": 5,
-                "available_slots": 5
+                "available_capacity": 5
             }
         }

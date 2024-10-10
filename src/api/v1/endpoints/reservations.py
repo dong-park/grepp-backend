@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.api.deps import get_db, get_current_user
 from src.models.user import User
 from src.schemas.reservation import ReservationCreate, ReservationUpdate, Reservation, UserReservationRead, \
-    AdminReservationRead, AvailableTimeSchema
+    AdminReservationRead, AvailableTimeSchema, UserReservationReadList, AdminReservationReadList
 from src.services.reservation import ReservationService
 
 router = APIRouter()
@@ -16,6 +16,7 @@ common_responses = {
     401: {"model": dict, "content": {"application/json": {"example": {"code": 401, "message": "Not authenticated"}}}},
     403: {"model": dict, "content": {"application/json": {"example": {"code": 403, "message": "Forbidden"}}}},
     404: {"model": dict, "content": {"application/json": {"example": {"code": 404, "message": "Not found"}}}},
+    422: {"model": dict, "content": {"application/json": {"example": {"code": 422, "message": "Unprocessable Entity"}}}},
 }
 
 
@@ -47,20 +48,19 @@ def create_reservation(
     return db_reservation
 
 
-@router.get("", response_model=Union[List[UserReservationRead], List[AdminReservationRead]], summary="사용자의 모든 예약 조회",
+@router.get("", response_model=Union[UserReservationReadList, AdminReservationReadList], summary="사용자의 모든 예약 조회",
             description="현재 사용자의 모든 예약을 조회합니다. 페이지네이션을 지원합니다.",
             status_code=status.HTTP_200_OK,
             responses=common_responses)
 def read_user_reservations(
         page: int = Query(1, description="페이지"),
-        limit: int = Query(100, description="한 페이지 최대 갯수"),
+        limit: int = Query(100, ge=1, le=1000, description="한 페이지 최대 갯수"),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user)
 ):
     is_admin = current_user.is_admin
-    reservations = ReservationService.get_user_reservations(
+    return ReservationService.get_user_reservations(
         db, None if is_admin else current_user.user_id, page, limit)
-    return reservations
 
 
 @router.get("/{reservation_id}", response_model=Union[UserReservationRead, AdminReservationRead], summary="특정 예약 조회",

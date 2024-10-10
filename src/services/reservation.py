@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import List, Optional
+from typing import Optional, Union
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -7,11 +7,12 @@ from sqlalchemy.orm import Session
 from src.crud import exam_schedule as exam_schedule_crud
 from src.crud import reservation_crud as reservation_crud
 from src.crud import reservation_query
+from src.crud.reservation_query import get_user_reservations_count
 from src.models import User
 from src.models.reservation import Reservation
 from src.schemas.reservation import (AdminReservationRead, ReservationCreate,
-                                     ReservationRead, ReservationUpdate,
-                                     UserReservationRead)
+                                     ReservationUpdate,
+                                     UserReservationRead, UserReservationReadList, AdminReservationReadList)
 from src.schemas.user import UserBase
 from src.utils.time_utils import get_kst_now
 
@@ -60,15 +61,25 @@ class ReservationService:
         return db_reservation
 
     @staticmethod
-    def get_user_reservations(db: Session, user_id: int, page: int = 1, limit: int = 100) -> List[ReservationRead]:
+    def get_user_reservations(db: Session, user_id: int, page: int = 1, limit: int = 100) -> Union[UserReservationReadList, AdminReservationReadList]:
+        total_items = get_user_reservations_count(db, user_id)
         query_results = reservation_query.get_user_reservations(db, user_id, page, limit)
+        total_pages = total_items // limit + (1 if total_items % limit > 0 else 0)
 
         if user_id is not None:
-            return [UserReservationRead.from_orm(result) for result in query_results]
+            read_schema = [UserReservationRead.from_orm(result) for result in query_results]
+            return UserReservationReadList(
+                revations=read_schema,
+                page=page,
+                page_size=limit,
+                total_itmes=total_items,
+                total_pages=total_pages
+            )
         else:
-            return [AdminReservationRead(
+            read_schema = [AdminReservationRead(
                 reservation_id=result.reservation_id,
                 exam_id=result.exam_id,
+                exam_name=result.exam_name,
                 is_confirmed=result.is_confirmed,
                 num_participants=result.num_participants,
                 user=UserBase(
@@ -77,6 +88,13 @@ class ReservationService:
                     username=result.username
                 )
             ) for result in query_results]
+            return AdminReservationReadList(
+                revations=read_schema,
+                page=page,
+                page_size=limit,
+                total_itmes=total_items,
+                total_pages=total_pages
+            )
 
     @staticmethod
     def update_reservation(db: Session, reservation_id: int, request: ReservationUpdate, current_user: User) -> Optional[Reservation]:
